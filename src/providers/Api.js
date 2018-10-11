@@ -15,9 +15,20 @@ const TIMEOUT = 20000;
  * GET a path relative to API root url.
  * @param {String}  path Relative path to the configured API endpoint
  * @param {Boolean} suppressRedBox If true, no warning is shown on failed request
+ * @param {Object} params if set, is converted to a quey string
+ * @param {Boolean} all if true, the request is sent with headers and status
  * @returns {Promise} of response body
  */
-export async function get(path, suppressRedBox) {
+export async function get(path, suppressRedBox, params, all) {
+
+  if(params){
+    var queryString = toQueryString(params);
+    path = path+'?'+queryString;
+  }
+
+  if(all)
+    return request('get', path, null, suppressRedBox);
+
   return bodyOf(request('get', path, null, suppressRedBox));
 }
 
@@ -204,6 +215,62 @@ async function bodyOf(requestPromise) {
   } catch (e) {
     throw e;
   }
+}
+
+//
+// Helper function that flattens an object, retaining key structer as a path array:
+//
+// Input: { prop1: 'x', prop2: { y: 1, z: 2 } }
+// Example output: [
+//     { path: [ 'prop1' ],      val: 'x' },
+//     { path: [ 'prop2', 'y' ], val: '1' },
+//     { path: [ 'prop2', 'z' ], val: '2' }
+// ]
+//
+function toQueryString(obj, urlEncode) {
+    
+    function flattenObj(x, path) {
+        var result = [];
+
+        path = path || [];
+        Object.keys(x).forEach(function (key) {
+            if (!x.hasOwnProperty(key)) return;
+
+            var newPath = path.slice();
+            newPath.push(key);
+
+            var vals = [];
+            if (typeof x[key] == 'object') {
+                vals = flattenObj(x[key], newPath);
+            } else {
+                vals.push({ path: newPath, val: x[key] });
+            }
+            vals.forEach(function (obj) {
+                return result.push(obj);
+            });
+        });
+
+        return result;
+    } // flattenObj
+
+    // start with  flattening `obj`
+    var parts = flattenObj(obj); // [ { path: [ ...parts ], val: ... }, ... ]
+
+    // convert to array notation:
+    parts = parts.map(function (varInfo) {
+        if (varInfo.path.length == 1) varInfo.path = varInfo.path[0];else {
+            var first = varInfo.path[0];
+            var rest = varInfo.path.slice(1);
+            varInfo.path = first + '[' + rest.join('][') + ']';
+        }
+        return varInfo;
+    }); // parts.map
+
+    // join the parts to a query-string url-component
+    var queryString = parts.map(function (varInfo) {
+        return varInfo.path + '=' + varInfo.val;
+    }).join('&');
+    if (urlEncode) return encodeURIComponent(queryString);else return queryString;
 }
 
 /**
