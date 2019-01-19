@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { AsyncStorage } from 'react-native';
-import { Provider } from 'react-redux';
+
 import { Root } from 'native-base';
-import CONSTANTS from './App.constants';
-import store from './redux/store';
 import Navigation from './App.routes';
+import { Provider } from 'react-redux';
+import CONSTANTS from './App.constants';
+import { AsyncStorage } from 'react-native';
+import { store, persistor } from './redux/store';
+import { PersistGate } from 'redux-persist/integration/react'
 
 type Props = {};
 export default class App extends Component < Props > {
@@ -31,7 +33,9 @@ export default class App extends Component < Props > {
         return (
             <Root>
                 <Provider store={store}>
-                  {this.renderInitialView()}
+                    <PersistGate loading={null} persistor={persistor}>
+                        {this.renderInitialView()}
+                    </PersistGate>
                 </Provider>
             </Root>
         );
