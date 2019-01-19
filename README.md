@@ -22,4 +22,6 @@ a  Simple lightweight [React Native](https://facebook.github.io/react-native/) b
 
 ### Trobleshotting 
 
+[run-ios issue](https://stackoverflow.com/questions/37461703/print-entry-cfbundleidentifier-does-not-exist?page=1&tab=votes#tab-top)
+
 Raise issues in the repo for any error

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { StyleSheet } from 'react-native';
 import { Container, Content, Text, View } from 'native-base';
 
 
@@ -28,9 +29,9 @@ class Welcome extends Component {
 	}
 }
 
-const styles = {
+const styles = StyleSheet.create({
 
 	
-}
+})
 
 export default Welcome;
