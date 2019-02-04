@@ -4,22 +4,21 @@ import storage from 'redux-persist/lib/storage';
 import middleware from './middleware';
 import reducer from './reducer';
 
-
 const persistConfig = {
   key: 'root',
   storage,
 }
 
+const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+
 // create the store
-const store = createStore(
+let store = createStore(
   persistReducer(persistConfig, reducer),
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
-  applyMiddleware(...middleware),
+  composeEnhancer(applyMiddleware(...middleware)),
 );
 
+// create persistor
+let persistor = persistStore(store);
 
-export default () => {
-  let store = store
-  let persistor = persistStore(store)
-  return { store, persistor }
-}
+export { store, persistor };
