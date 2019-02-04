@@ -36,7 +36,7 @@ createInner() {
 
     createFile "${pDir}/index.js"
     createFile "${pDir}/View.js"
-    createFile "${pDir}/components/index.js"
+    createFile "${pDir}/style.js"
 
     verbose "created $modulePackage in $module"
 }
@@ -83,4 +83,4 @@ createFile "${module}/store.js"
 
 createInner "${module}/welcome"
 
-verbose "omodule $1 created"
+verbose "module $1 created"
